@@ -33,5 +33,17 @@ int main(int arg, char** args)
   wb = atoi(args[4]);
   tracefile = args[5];
 
-  printf("the cache size is %d\nthe assoc is %d\nthe rp is %d\nthe wb is %d\nthe name and path is %s", CacheSize, assoc, rp, wb, tracefile);
+  if( rp == 0 )
+  {
+    //call LRU
+  }
+
+  else//if( rp == 1 )
+  {
+    //call FIFO
+  }
+
+  printf("Miss ratio: %d\nWrites: %d\nReads: %d", /*PLACEHOLDERS*/ 1 , 1 , 1 );
+
+  //printf("the cache size is %d\nthe assoc is %d\nthe rp is %d\nthe wb is %d\nthe name and path is %s", CacheSize, assoc, rp, wb, tracefile);
 }
