@@ -45,7 +45,7 @@ int main( int arg, char** args )
     char ReadWrite;
     unsigned long long hex;
 
-    while( fscanf(tracefile, "%c 0x%llx", &ReadWrite, &hex) == 2 )
+    while( fscanf(tracefile, " %c 0x%llx", &ReadWrite, &hex) == 2 )
     {
         // Process each line here (e.g., printing)
         printf(" Operation: %c\tHex: %llx\n", ReadWrite, hex );
