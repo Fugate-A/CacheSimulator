@@ -1,4 +1,4 @@
-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------
 This is a Cache Simulator Project made for the 
 Computer Architecture course at the University of Central Florida
 
@@ -23,7 +23,7 @@ for access to all test files on all platforms.
 To compile this code please refer to the makefile.txt that was also delivered
 with the report; or access the code base on GitHub @ https://github.com/Fugate-A/CacheSimulator 
 
-----------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------
 
 Output format (using: 32768 8 0 0 smallTest.t):
 
@@ -39,4 +39,4 @@ Output format (using: 32768 8 0 0 smallTest.t):
             Cache Size: 32768       Associativity: 8
             Policy: LRU -- write_through
 
-------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------
