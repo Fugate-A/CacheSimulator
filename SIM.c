@@ -18,8 +18,8 @@ int CacheSize;
 long long int **tagArray;
 bool **dirty;
 
-int Hits = 0;
-int Misses = 0;
+double Hits = 0;
+double Misses = 0;
 
 int Reads = 0;
 int Writes = 0;
@@ -38,7 +38,7 @@ void updateLRU( long long int addy )
 
   for( int i = 0; i < assoc; i++ )
   {
-    if( tagArray[ set ][ i ] = tag )
+    if( tagArray[ set ][ i ] == tag )
     {
       tempPlace = i;
       break;
@@ -81,17 +81,68 @@ void simulate( char op, long long int addy )
       if( rp == 0 ) //rp = 0 is LRU and rp = 1 is FIFO
       {
         updateLRU( addy );
+        
+        if( op == 'W' && wb == 1 )
+        {
+          dirty[ set ][ 0 ] = true;
+        }
       }
 
-      else//if( rp == 1 )
+      else if( op == 'W' && wb == 1 )
       {
-        updateFIFO( addy );
+        dirty[ set ][ i ] = true;
       }
+      
+      else//if( op = w and wb = 1 )
+      {
+        Writes++;
+      }
+      return;
     }
-    
-    else
+  }
+
+  Misses++;
+  Reads++;
+
+  if( rp == 0 )
+  {
+    if( dirty[ set ][ assoc - 1 ] == true )
     {
-      Misses++;
+      Writes++;
+    }
+
+    for( int i = assoc - 1; i > 0; i-- )
+    {
+      tagArray[ set ][ i ] = tagArray[ set ][ i - 1 ];
+      dirty[ set ][ i ] = dirty[ set ][ i - 1 ];
+    }
+
+    tagArray[ set ][ 0 ] = tag;
+    dirty[ set ][ 0 ] = false;
+
+    if( op == 'W' && wb == 1 )
+    {
+      dirty[ set ][ 0 ] = true;
+    }
+
+    if( op == 'W' && wb == 0 )
+    {
+      Writes++;
+    }
+  }
+
+  else
+  {
+    updateFIFO( addy );
+
+    if( op == 'W' && wb == 1 )
+    {
+      dirty[ set ][ 0 ] = true;
+    }
+
+    else if( op == 'W' && wb == 0 )
+    {
+      Writes++;
     }
   }
 }
@@ -153,13 +204,19 @@ int main( int noi, char** inputs )
     return 1;
   }
 
-  printf("CacheSize: %lldB\tAssoc: %d\trp: %d\twb: %d\ntrace path: %s",
-              CacheSize, assoc, rp, wb, tracefilepath);
+  /*printf("CacheSize: %lldB\tAssoc: %d\trp: %d\twb: %d\ntrace path: %s",
+              CacheSize, assoc, rp, wb, tracefilepath);*/
+
+  printf("1");
 
   nos = CacheSize / ( BlockSize * assoc );  
 
+  printf("2");
+
   tagArray = malloc( nos * sizeof( long long int* ) );
   dirty = malloc( assoc * sizeof( bool ) );
+
+  printf("3");
 
   for( int i = 0; i < nos; i++ )
   {
@@ -167,16 +224,22 @@ int main( int noi, char** inputs )
     
     dirty[ i ] = malloc( assoc * sizeof( bool ) );
   }
+
+  printf("4");
   
   for( int i = 0; i < nos; i++ )
   {
+    printf("\nthis is i: %d",i);
     for( int j = 0; j < assoc; j++ )
     {
+      printf("\nthis is j: %d",j);
       tagArray[ i ][ j ] = -1;
 
       dirty[ i ][ j ] = false;
     }
   }
+
+  printf("5");
 
   while( fscanf( tracefile, "%c %llx", &op, &addy ) != EOF )
   {
@@ -185,7 +248,7 @@ int main( int noi, char** inputs )
 
   fclose( tracefile );
 
-  printf("\nResults:\nMiss ratio: %d\nWrites: %d\nReads: %d\n\nExtra Information:\n\tHits: %d\tMisses: %d\n\n\tInputs:\n\t\tCache Size: %d\tAssociativity: %d\t Policy: %s, Write_%s",
+  printf("\nResults:\nMiss ratio: %lf\nWrites: %d\nReads: %d\n\nExtra Information:\n\tHits: %d\tMisses: %d\n\n\tInputs:\n\t\tCache Size: %d\tAssociativity: %d\t Policy: %s, Write_%s",
             Misses / ( Hits + Misses ),
             Writes,
             Reads,Hits,
