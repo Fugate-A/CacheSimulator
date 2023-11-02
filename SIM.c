@@ -31,10 +31,10 @@ long long int tag = -1;
 
 //------------------------------------------------------------------
 
-void UpdateLRU( long long int add )
+void UpdateLRU( long long int addy )
 {
-  int set = ((unsigned long long int)add / BLOCK_SIZE) % nos;
-  tag = add / BLOCK_SIZE;
+  int set = ((unsigned long long int)addy / BLOCK_SIZE) % nos;
+  tag = addy / BLOCK_SIZE;
     int tempPlace = -1;
     bool holder;
 
@@ -59,9 +59,9 @@ void UpdateLRU( long long int add )
     dirty[ set ][ 0 ] = holder;
   }
 
-void UpdateFIFO(long long int add) {
-    set = ((unsigned long long int)add / BLOCK_SIZE) % nos;
-    long long int tag = add / BLOCK_SIZE;
+void UpdateFIFO( long long int addy ) {
+    set = ((unsigned long long int)addy / BLOCK_SIZE) % nos;
+    long long int tag = addy / BLOCK_SIZE;
     if (dirty[set][assoc - 1] == true)
         Writes++;
     for (int i = assoc - 1; i > 0; i--) {
@@ -72,14 +72,14 @@ void UpdateFIFO(long long int add) {
     dirty[set][0] = false;
 }
 
-void Simulate_access(char op, long long int add) {
-    int set = ((unsigned long long int)add / BLOCK_SIZE) % nos;
-    long long int tag = add / BLOCK_SIZE;
+void Simulate_access(char op, long long int addy) {
+    int set = ((unsigned long long int)addy / BLOCK_SIZE) % nos;
+    long long int tag = addy / BLOCK_SIZE;
     for (int i = 0; i < assoc; i++) {
         if (tag == tagArray[set][i]) {
             Hits++;
             if (rp == 0) {
-                UpdateLRU(add);
+                UpdateLRU(addy);
                 if (op == 'W' && wb == 1) {
                     dirty[set][0] = true;
                 }
@@ -113,7 +113,7 @@ void Simulate_access(char op, long long int add) {
             Writes++;
         }
     } else {
-        UpdateFIFO(add);
+        UpdateFIFO(addy);
         if (op == 'W' && wb == 1) {
             dirty[set][0] = true;
         }
@@ -159,9 +159,9 @@ int main(int arg, char **args) {
     }
 
     char op;
-    long long int add;
-    while (fscanf(file, " %c %llx\n", &op, &add) != EOF) {
-        Simulate_access(op, add);
+    long long int addy;
+    while (fscanf(file, " %c %llx\n", &op, &addy) != EOF) {
+        Simulate_access(op, addy);
     }
 
     fclose(file);
