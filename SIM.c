@@ -191,9 +191,7 @@ int main( int noi, char **inputs)
     simulate(op, addy);
   }
 
-  fclose(tracefile);
-
-  printf("\nResults:\nMiss ratio: %lf\nWrites: %d\nReads: %d\n\nExtra Information:\n\tHits: %.0lf\tMisses: %.0lf\n\n\tInputs:\n\t\tCache Size: %d\tAssociativity: %d\n\t\tPolicy: %s -- write_%s",
+  printf("\nResults:\nMiss ratio: %lf\nWrites: %d\nReads: %d\n\nExtra Information:\n\tHits: %.0lf\tMisses: %.0lf\n\n\tInputs:\n\t\tCache Size: %d\tAssociativity: %d\n\t\tPolicy: %s -- write_%s\n\n",
         Misses / (Hits + Misses),
         Writes,
         Reads, Hits,
@@ -203,17 +201,22 @@ int main( int noi, char **inputs)
         policyString(rp),
         wbString(wb)
     );
+    
+  for( int i = 0; i < nos; i++ )
+  {
+    free(tagArray[i]);
+    free(dirty[i]);
 
-  /*double Misses_ratio = (double)Misses / (Misses + Hits);
-  printf("Misses Ratio %lf\n", Misses_ratio);
-  printf("Writes %d\n", Writes);
-  printf("Reads %d\n", Reads);*/
-
-  for (int i = 0; i < nos; i++) {
-      free(tagArray[i]);
-      free(dirty[i]);
+    if( i == nos - 1 )
+    {
+      free(tagArray);
+      free(dirty);
+      
+      fclose(tracefile);
+    }
   }
-  free(tagArray);
-  free(dirty);
+  
   return 0;
+
 }
+
