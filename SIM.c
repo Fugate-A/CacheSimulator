@@ -10,7 +10,7 @@
 
 //---------------------------------------------------------
 
-int nos;
+int nos;    //nos = number of sets
 int assoc;
 
 int CacheSize;
@@ -96,11 +96,30 @@ int main( int noi, char** inputs )
     return 1;
   }
 
-  nos = CacheSize / ( BlockSize * assoc );  //nos = number of sets
-  int offsetBits = log2( BlockSize );
-  int indexBits = log2( nos );
-  int tagBits = BlockSize - indexBits - offsetBits;
+  nos = CacheSize / ( BlockSize * assoc );  
+
+  tagArray = malloc( nos * sizeof( long long int* ) );
+  dirty = malloc( assoc * sizeof( bool ) );
+
+  for( int i = 0; i < nos; i++ )
+  {
+    tagArray[ i ] = malloc( assoc * sizeof( long long int ) );
+    
+    dirty[ i ] = malloc( assoc * sizeof( bool ) );
+  }
   
+  for( int i = 0; i < nos; i++ )
+  {
+    for( int j = 0; j < assoc; j++ )
+    {
+      //
+    }
+  }
+
+
+
+
+
   unsigned long long** cache = /*(unsigned long long**)*/ malloc( nos * sizeof( unsigned long long* ) );
 
   for( int i = 0; i < nos; i++ )
