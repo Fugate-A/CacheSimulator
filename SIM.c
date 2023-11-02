@@ -27,11 +27,35 @@ int Writes = 0;
 int wb = -1;
 int rp = -1;
 
+int set = -1;
+long long int tag = -1;
+
 //---------------------------------------------------------
 
 void updateLRU( long long int addy )
 {
-  //
+  int tempPlace = -1;
+
+  for( int i = 0; i < assoc; i++ )
+  {
+    if( tagArray[ set ][ i ] = tag )
+    {
+      tempPlace = i;
+      break;
+    }
+  }
+
+  bool holder = dirty[ set ][ tempPlace ];
+
+  for( int i = tempPlace; i > 0; i-- )
+  {
+    tagArray[ set ][ i ] = tagArray[ set ][ i - 1 ];
+    dirty[ set ][ i ] = dirty[ set ][ i - 1 ];
+  }
+
+  tagArray[ set ][ 0 ] = tag;
+  dirty[ set ][ 0 ] = holder;
+
 }
 
 //---------------------------------------------------------
@@ -45,8 +69,8 @@ void updateFIFO( long long int addy )
 
 void simulate( char op, long long int addy )
 {
-  int set = ( addy / BlockSize ) % nos;
-  long long int tag = addy / BlockSize;
+  set = ( addy / BlockSize ) % nos;
+  tag = addy / BlockSize;
 
   for( int i = 0; i < assoc; i++ )
   {
@@ -78,12 +102,12 @@ char* policyString( int rp )
 {
   if( rp == 0 )
   {
-    return "yes";
+    return "LRU";
   }
 
   else
   {
-    return "no";
+    return "FIFO";
   }
 }
 
@@ -93,12 +117,12 @@ char* wbString( int wb )
 {
   if( wb == 0 )
   {
-    return "yes";
+    return "through";
   }
 
   else
   {
-    return "no";
+    return "back";
   }
 }
 
@@ -186,5 +210,3 @@ int main( int noi, char** inputs )
 
   return 0;
 }
-
-
