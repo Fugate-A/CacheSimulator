@@ -29,24 +29,24 @@ int rp = -1;
 
 //---------------------------------------------------------
 
-void updateLRU( long long int add )
+void updateLRU( long long int addy )
 {
   //
 }
 
 //---------------------------------------------------------
 
-void updateFIFO( long long int add )
+void updateFIFO( long long int addy )
 {
   //
 }
 
 //---------------------------------------------------------
 
-void simulate( char op, long long int add )
+void simulate( char op, long long int addy )
 {
-  int set = ( add / BlockSize ) % nos;
-  long long int tag = add / BlockSize;
+  int set = ( addy / BlockSize ) % nos;
+  long long int tag = addy / BlockSize;
 
   for( int i = 0; i < assoc; i++ )
   {
@@ -56,12 +56,12 @@ void simulate( char op, long long int add )
 
       if( rp == 0 ) //rp = 0 is LRU and rp = 1 is FIFO
       {
-        updateLRU( add );
+        updateLRU( addy );
       }
 
       else//if( rp == 1 )
       {
-        updateFIFO( add );
+        updateFIFO( addy );
       }
     }
     
@@ -82,6 +82,9 @@ int main( int noi, char** inputs )
     return 1;
   }
   
+  char op;
+  long long int addy;
+
   CacheSize = atoi( inputs[1] );       //atoi = ASCII to Int function in C
   assoc = atoi( inputs[2] );
   rp = atoi( inputs[3] );
@@ -112,7 +115,9 @@ int main( int noi, char** inputs )
   {
     for( int j = 0; j < assoc; j++ )
     {
-      //
+      tagArray[ i ][ j ] = -1;
+
+      dirty[ i ][ j ] = false;
     }
   }
 
@@ -120,48 +125,7 @@ int main( int noi, char** inputs )
 
 
 
-  unsigned long long** cache = /*(unsigned long long**)*/ malloc( nos * sizeof( unsigned long long* ) );
-
-  for( int i = 0; i < nos; i++ )
-  {
-    cache[i] = /*(unsigned long long*)*/ malloc( assoc * sizeof( unsigned long long ) );
-    
-    for( int j = 0; j < assoc; j++ )
-    {
-      cache[i][j] = 0; // Initialize cache entries to zero or any default value
-    }
-  }
-
-  char ReadWrite;
-  unsigned long long hex;
-
-  while( fscanf(tracefile, "%c 0x%llx", &ReadWrite, &hex) == 2 )
-  {
-    int index = (hex >> offsetBits) & (nos - 1); // Calculate the index
-
-    printf(" Operation: %c\tHex: %llx\tindex: %d\n", ReadWrite, hex, index );
-    
-  if (fscanf(tracefile, "%c 0x%llx", &ReadWrite, &hex) != 2) {
-    printf("Error reading input line %d\n", fscanf(tracefile, "%c 0x%llx", &ReadWrite, &hex));
-    break;
-
-  }
-  }
-
-  printf("CacheSize: %d\tassoc: %d\trp: %d\twb: %d\tnos: %d\ttag size: %d\tindex size: %d\t offset size: %d", 
-          CacheSize, assoc, rp, wb, nos, tagBits, indexBits, offsetBits );
-
-
-
-
-
-  //free cache
-  for( int i = 0; i < nos; i++ )
-  {
-    free(cache[i]);
-  }
-
-  free(cache);
+//dont forget to free :)
 
   return 0;
 }
