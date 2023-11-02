@@ -63,6 +63,23 @@ char* wbString( int wb )
 
 //------------------------------------------------------------------
 
+void ClearMem()
+{
+  for( int i = 0; i < nos; i++ )
+  {
+    free(tagArray[i]);
+    free(dirty[i]);
+
+    if( i == nos - 1 )
+    {
+      free(tagArray);
+      free(dirty);
+    }
+  }
+}
+
+//------------------------------------------------------------------
+
 /*bool SetTag()
 {
   if( set == -1 && tag == -1 )
@@ -215,24 +232,30 @@ void simulate( char op, long long int addy )
 
 int main( int noi, char **inputs)
 {
-  if (noi != 6)
+  char *tracefilepath;
+  char op;
+
+  long long int addy;
+
+  if( noi != 6 )
   {
     printf("Not enough inputs, please try again or refer to instructions (readme or makefile)");
     return 1;
   }
 
-  char op;
-  long long int addy;
+  else
+  {
+    CacheSize = atoi( inputs[1] );
+    assoc = atoi( inputs[2] );
+    rp = atoi( inputs[3] );
+    wb = atoi( inputs[4] );
 
-  CacheSize = atoi( inputs[1] );
-  assoc = atoi( inputs[2] );
-  rp = atoi( inputs[3] );
-  wb = atoi( inputs[4] );
+    tracefilepath = inputs[5];
+  }
   
-  char *tracefilepath = inputs[5];
   FILE *tracefile = fopen(tracefilepath, "r");
   
-  if (tracefile == NULL)
+  if( tracefile == NULL )
   {
     printf("No file found in this location or could not open file");
     return 1;
@@ -245,12 +268,9 @@ int main( int noi, char **inputs)
 
   for( int i = 0; i < nos; i++ )
   {
-    tagArray[i] = malloc( sizeof( long long int ) * assoc );
-    dirty[i] = malloc( sizeof( bool ) * assoc );
-  }
+    tagArray[ i ] = malloc( sizeof( long long int ) * assoc );
+    dirty[ i ] = malloc( sizeof( bool ) * assoc );
 
-  for( int i = 0; i < nos; i++ )
-  {
     for( int j = 0; j < assoc; j++ )
     {
       tagArray[ i ][ j ] = -1;
@@ -274,29 +294,16 @@ int main( int noi, char **inputs)
   printf("\nResults:\nMiss ratio: %lf\nWrites: %d\nReads: %d\n\nExtra Information:\n\tHits: %.0lf\tMisses: %.0lf\n\n\tInputs:\n\t\tCache Size: %d\tAssociativity: %d\n\t\tPolicy: %s -- write_%s\n\n",
         Misses / (Hits + Misses),
         Writes,
-        Reads, Hits,
-        Misses,
-        CacheSize,
-        assoc,
-        policyString(rp),
-        wbString(wb)
+        Reads,
+        Hits, Misses,
+        CacheSize, assoc,
+        policyString(rp), /*--*/ wbString(wb)
     );
     
-  for( int i = 0; i < nos; i++ )
-  {
-    free(tagArray[i]);
-    free(dirty[i]);
+    ClearMem();
 
-    if( i == nos - 1 )
-    {
-      free(tagArray);
-      free(dirty);
-      
-      fclose(tracefile);
-    }
+    fclose(tracefile);
+    
+    return 0;
   }
   
-  return 0;
-
-}
-
