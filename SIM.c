@@ -121,7 +121,8 @@ int main( int noi, char** inputs )
     }
   }
 
-
+printf("CacheSize: %lldB\tAssoc: %d\trp: %d\twb: %d\ntrace path: %s",
+              CacheSize, assoc, rp, wb, tracefilepath);
 
 
 
