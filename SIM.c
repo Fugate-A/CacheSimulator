@@ -11,7 +11,10 @@
 #define BlockSize 64  //given value to be assumed
 
 //------------------------------------------------------------------
-/*Globar Variables*/
+/*
+  Globar Variables
+*/
+
 int nos;    //number of sets
 int assoc;  //associativity
 
