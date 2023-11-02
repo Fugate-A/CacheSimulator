@@ -7,13 +7,13 @@
 
 //------------------------------------------------------------------
 
-#define BLOCK_SIZE 64
+#define BlockSize 64
 
 //------------------------------------------------------------------
 
 int nos;
 int assoc;
-int CacheSize;
+
 long long int **tagArray;
 bool **dirty;
 
@@ -22,6 +22,8 @@ double Misses = 0;
 
 int Reads = 0;
 int Writes = 0;
+
+int CacheSize;
 
 int rp = -1;
 int wb = -1;
@@ -61,40 +63,55 @@ char* wbString( int wb )
 
 //------------------------------------------------------------------
 
+/*bool SetTag()
+{
+  if( set == -1 && tag == -1 )
+  {
+    return false;
+  }
+
+  else//if( set and tag are updated)
+  {
+    return true;
+  }
+}*/
+
+//------------------------------------------------------------------
+
 void UpdateLRU( long long int addy )
 {
-  int set = ((unsigned long long int)addy / BLOCK_SIZE) % nos;
-  tag = addy / BLOCK_SIZE;
-    int tempPlace = -1;
-    bool holder;
-
-    for( int i = 0; i < assoc; i++ )
+  int tempPlace = -1;
+  bool holder;
+  
+  for( int i = 0; i < assoc; i++ )
+  {
+    if( tagArray[ set ][ i ] == tag )
     {
-      if( tagArray[ set ][ i ] == tag )
-      {
-        tempPlace = i;
-        break;
-      }
+      tempPlace = i;
+      break;
     }
-
-    holder = dirty[ set ][ tempPlace ];
-
-    for( int i = tempPlace; i > 0; i-- )
-    {
-      tagArray[ set ][ i ] = tagArray[ set ][ i - 1 ];
-      dirty[ set ][ i ] = dirty[ set ][ i - 1 ];
-    }
-
-    tagArray[ set ][ 0 ] = tag;
-    dirty[ set ][ 0 ] = holder;
   }
+
+  holder = dirty[ set ][ tempPlace ];
+
+  for( int i = tempPlace; i > 0; i-- )
+  {
+    tagArray[ set ][ i ] = tagArray[ set ][ i - 1 ];
+    dirty[ set ][ i ] = dirty[ set ][ i - 1 ];
+
+    if( i == 1 )
+    {
+      tagArray[ set ][ 0 ] = tag;
+      dirty[ set ][ 0 ] = holder;
+    }
+  }
+}
 
 //------------------------------------------------------------------
 
 void UpdateFIFO( long long int addy )
 {
-  set = ((unsigned long long int)addy / BLOCK_SIZE) % nos;
-  long long int tag = addy / BLOCK_SIZE;
+  
   if (dirty[set][assoc - 1] == true)
       Writes++;
   for (int i = assoc - 1; i > 0; i--) {
@@ -108,8 +125,6 @@ void UpdateFIFO( long long int addy )
 //------------------------------------------------------------------
 
 void simulate(char op, long long int addy) {
-    int set = ((unsigned long long int)addy / BLOCK_SIZE) % nos;
-    long long int tag = addy / BLOCK_SIZE;
     for (int i = 0; i < assoc; i++) {
         if (tag == tagArray[set][i]) {
             Hits++;
@@ -185,7 +200,7 @@ int main( int noi, char **inputs)
     return 1;
   }
 
-  nos = CacheSize / ( BLOCK_SIZE * assoc );
+  nos = CacheSize / ( BlockSize * assoc );
 
   tagArray = malloc( sizeof( long long int* ) * nos );
   dirty = malloc( sizeof( bool* ) * nos );
@@ -207,6 +222,14 @@ int main( int noi, char **inputs)
   
   while( fscanf( tracefile, "%c %llx\n", &op, &addy) != EOF )
   {
+    /*if( SetTag() == false )
+    {
+      //not working
+    }*/
+
+    set = ( addy / BlockSize ) % nos;
+    tag = addy / BlockSize;
+  
     simulate(op, addy);
   }
 
