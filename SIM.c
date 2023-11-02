@@ -74,7 +74,7 @@ void simulate( char op, long long int addy )
 
 //---------------------------------------------------------
 
-char policyString( rp )
+char* policyString( int rp )
 {
   if( rp == 0 )
   {
@@ -89,7 +89,7 @@ char policyString( rp )
 
 //---------------------------------------------------------
 
-char wbString( wb )
+char* wbString( int wb )
 {
   if( wb == 0 )
   {
@@ -129,8 +129,8 @@ int main( int noi, char** inputs )
     return 1;
   }
 
-  /*printf("CacheSize: %lldB\tAssoc: %d\trp: %d\twb: %d\ntrace path: %s",
-              CacheSize, assoc, rp, wb, tracefilepath);*/
+  printf("CacheSize: %lldB\tAssoc: %d\trp: %d\twb: %d\ntrace path: %s",
+              CacheSize, assoc, rp, wb, tracefilepath);
 
   nos = CacheSize / ( BlockSize * assoc );  
 
@@ -172,7 +172,17 @@ int main( int noi, char** inputs )
             wbString( wb )
           );
 
-  //dont forget to free :)
+  for( int i = 0; i < nos; i++ )
+  {
+    free( tagArray[ i ] );
+    free( dirty[ i ] );
+
+    if( i == nos - 1 )
+    {
+      free( tagArray );
+      free( dirty );
+    }
+  }
 
   return 0;
 }
