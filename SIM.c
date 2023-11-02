@@ -3,184 +3,159 @@
 #include <stdbool.h>
 #include <math.h>
 
-#define BlockSize 64
+int NUM_SETS;
+int ASSOC;
+int CACHE_SIZE;
+#define BLOCK_SIZE 64
 
-int nos;    // Number of sets
-int assoc;
-int CacheSize;
 long long int **tagArray;
 bool **dirty;
 
-double Hits = 0;
-double Misses = 0;
-int Reads = 0;
-int Writes = 0;
-int wb = -1;
-int rp = -1;
-int set = -1;
-long long int tag = -1;
+int Hit = 0;
+int Miss = 0;
+int Write = 0;
+int Read = 0;
+int Replacement;
+int WriteBack;
 
-void updateLRU(long long int addy) {
-    int tempPlace = -1;
+void UpdateLRU(long long int add);
+void UpdateFIFO(long long int add);
 
-    for (int i = 0; i < assoc; i++) {
+void UpdateLRU(long long int add) {
+    int set = ((unsigned long long int)add / BLOCK_SIZE) % NUM_SETS;
+    long long int tag = add / BLOCK_SIZE;
+    int i;
+    for (i = 0; i < ASSOC; i++) {
         if (tagArray[set][i] == tag) {
-            tempPlace = i;
             break;
         }
     }
-
-    bool holder = dirty[set][tempPlace];
-
-    for (int i = tempPlace; i > 0; i--) {
-        tagArray[set][i] = tagArray[set][i - 1];
-        dirty[set][i] = dirty[set][i - 1];
+    bool temp = dirty[set][i];
+    for (int j = i; j > 0; j--) {
+        tagArray[set][j] = tagArray[set][j - 1];
+        dirty[set][j] = dirty[set][j - 1];
     }
-
     tagArray[set][0] = tag;
-    dirty[set][0] = holder;
+    dirty[set][0] = temp;
 }
 
-void updateFIFO(long long int addy) {
-    int set = (addy / BlockSize) % nos;
-    long long int tag = addy / BlockSize;
-
-    if (dirty[set][assoc - 1] == true) {
-        Writes++;
-    }
-
-    for (int i = assoc - 1; i > 0; i--) {
+void UpdateFIFO(long long int add) {
+    int set = ((unsigned long long int)add / BLOCK_SIZE) % NUM_SETS;
+    long long int tag = add / BLOCK_SIZE;
+    if (dirty[set][ASSOC - 1] == true)
+        Write++;
+    for (int i = ASSOC - 1; i > 0; i--) {
         tagArray[set][i] = tagArray[set][i - 1];
         dirty[set][i] = dirty[set][i - 1];
     }
-
     tagArray[set][0] = tag;
     dirty[set][0] = false;
 }
 
-void simulate(char op, long long int addy) {
-    set = (addy / BlockSize) % nos;
-    tag = addy / BlockSize;
-
-    for (int i = 0; i < assoc; i++) {
+void Simulate_access(char op, long long int add) {
+    int set = ((unsigned long long int)add / BLOCK_SIZE) % NUM_SETS;
+    long long int tag = add / BLOCK_SIZE;
+    for (int i = 0; i < ASSOC; i++) {
         if (tag == tagArray[set][i]) {
-            Hits++;
-
-            if (rp == 0) { // LRU
-                updateLRU(addy);
-
-                if (op == 'W' && wb == 1) {
+            Hit++;
+            if (Replacement == 0) {
+                UpdateLRU(add);
+                if (op == 'W' && WriteBack == 1) {
                     dirty[set][0] = true;
                 }
-            } else { // FIFO
-                updateFIFO(addy);
-
-                if (op == 'W' && wb == 1) {
-                    dirty[set][0] = true;
+            } else {
+                if (op == 'W' && WriteBack == 1) {
+                    dirty[set][i] = true;
                 }
+            }
+            if (op == 'W' && WriteBack == 0) {
+                Write++;
             }
             return;
         }
     }
-
-    Misses++;
-    Reads++;
-
-    if (rp == 0) { // LRU
-        if (dirty[set][assoc - 1] == true) {
-            Writes++;
+    Miss++;
+    Read++;
+    if (Replacement == 0) {
+        if (dirty[set][ASSOC - 1] == true) {
+            Write++;
         }
-        // Rest of the LRU logic here
-    } else { // FIFO
-        updateFIFO(addy);
-
-        if (op == 'W' && wb == 1) {
+        for (int i = ASSOC - 1; i > 0; i--) {
+            tagArray[set][i] = tagArray[set][i - 1];
+            dirty[set][i] = dirty[set][i - 1];
+        }
+        tagArray[set][0] = tag;
+        dirty[set][0] = false;
+        if (op == 'W' && WriteBack == 1) {
             dirty[set][0] = true;
-        } else if (op == 'W' && wb == 0) {
-            Writes++;
+        }
+        if (op == 'W' && WriteBack == 0) {
+            Write++;
+        }
+    } else {
+        UpdateFIFO(add);
+        if (op == 'W' && WriteBack == 1) {
+            dirty[set][0] = true;
+        }
+        if (op == 'W' && WriteBack == 0) {
+            Write++;
         }
     }
 }
 
-char* policyString(int rp) {
-    if (rp == 0) {
-        return "LRU";
-    } else {
-        return "FIFO";
-    }
-}
-
-char* wbString(int wb) {
-    if (wb == 0) {
-        return "through";
-    } else {
-        return "back";
-    }
-}
-
-int main(int noi, char** inputs) {
-    if (noi != 6) {
-        printf("Not enough inputs, please try again or refer to instructions (readme or makefile)");
+int main(int arg, char **args) {
+    if (arg != 6) {
+        printf("Invalid Number of Arguments.");
         return 1;
     }
 
-    char op;
-    long long int addy;
+    CACHE_SIZE = atoi(args[1]);
+    ASSOC = atoi(args[2]);
+    Replacement = atoi(args[3]);
+    WriteBack = atoi(args[4]);
+    char *tracefile = args[5];
 
-    CacheSize = atoi(inputs[1]);
-    assoc = atoi(inputs[2]);
-    rp = atoi(inputs[3]);
-    wb = atoi(inputs[4]);
-
-    char* tracefilepath = inputs[5];
-    FILE *tracefile = fopen(tracefilepath, "r");
-
-    if (tracefile == NULL) {
-        printf("No file found in this location or could not open file");
+    FILE *file = fopen(tracefile, "r");
+    if (file == NULL) {
+        printf("Error: Could not open the trace file.\n");
         return 1;
     }
 
-    nos = CacheSize / (BlockSize * assoc);
+    NUM_SETS = CACHE_SIZE / (BLOCK_SIZE * ASSOC);
 
-    tagArray = malloc(nos * sizeof(long long int*));
-    dirty = malloc(assoc * sizeof(bool));
+    tagArray = (long long int **)malloc(NUM_SETS * sizeof(long long int *));
+    dirty = (bool **)malloc(NUM_SETS * sizeof(bool *));
 
-    for (int i = 0; i < nos; i++) {
-        tagArray[i] = malloc(assoc * sizeof(long long int));
-        dirty[i] = malloc(assoc * sizeof(bool));
+    for (int i = 0; i < NUM_SETS; i++) {
+        tagArray[i] = (long long int *)malloc(ASSOC * sizeof(long long int));
+        dirty[i] = (bool *)malloc(ASSOC * sizeof(bool));
     }
 
-    for (int i = 0; i < nos; i++) {
-        for (int j = 0; j < assoc; j++) {
+    for (int i = 0; i < NUM_SETS; i++) {
+        for (int j = 0; j < ASSOC; j++) {
             tagArray[i][j] = -1;
             dirty[i][j] = false;
         }
     }
 
-    while (fscanf(tracefile, "%c %llx", &op, &addy) != EOF) {
-        simulate(op, addy);
+    char op;
+    long long int add;
+    while (fscanf(file, " %c %llx\n", &op, &add) != EOF) {
+        Simulate_access(op, add);
     }
 
-    fclose(tracefile);
+    fclose(file);
 
-    printf("\nResults:\nMiss ratio: %lf\nWrites: %d\nReads: %d\n\nExtra Information:\n\tHits: %d\tMisses: %d\n\n\tInputs:\n\t\tCache Size: %d\tAssociativity: %d\t Policy: %s, Write_%s",
-        Misses / (Hits + Misses),
-        Writes,
-        Reads, Hits,
-        Misses,
-        CacheSize,
-        assoc,
-        policyString(rp),
-        wbString(wb)
-    );
+    double Miss_ratio = (double)Miss / (Miss + Hit);
+    printf("Miss Ratio %lf\n", Miss_ratio);
+    printf("write %d\n", Write);
+    printf("read %d\n", Read);
 
-    for (int i = 0; i < nos; i++) {
+    for (int i = 0; i < NUM_SETS; i++) {
         free(tagArray[i]);
         free(dirty[i]);
     }
-
     free(tagArray);
     free(dirty);
-
     return 0;
 }
