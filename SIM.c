@@ -18,7 +18,7 @@
 int nos;    //number of sets
 int assoc;  //associativity
 
-long long int **tagArray;
+unsigned long long int **tagArray;
 bool **dirty;
 
 double Hits = 0;
@@ -126,7 +126,7 @@ void ClearMem()
   where wee want the LRU to end processing
 */
 
-void updateLRU( long long int addy )
+void updateLRU( unsigned long long int addy )
 {
   int tempPlace = -1;
   bool holder;
@@ -162,7 +162,7 @@ void updateLRU( long long int addy )
   global variables for printing stats
 */
 
-void updateFIFO( long long int addy )
+void updateFIFO( unsigned long long int addy )
 {
   for( int i = assoc - 1; i > 0; i-- )
   {
@@ -190,7 +190,7 @@ void updateFIFO( long long int addy )
   but calls for LRU and FIFO to do their thing
 */
 
-void simulate( char op, long long int addy )
+void simulate( char op, unsigned long long int addy )
 {
   for( int i = 0; i < assoc; i++ )
   {
@@ -285,7 +285,7 @@ int main( int noi, char **inputs)
   char *tracefilepath;
   char op;
 
-  long long int addy;
+  unsigned long long int addy;
 
   if( noi != 6 )
   {
@@ -337,7 +337,7 @@ int main( int noi, char **inputs)
 
     set = ( addy / BlockSize ) % nos;
     tag = addy / BlockSize;
-  
+
     simulate(op, addy);
   }
 

@@ -1,0 +1,25 @@
+
+vsc:
+gcc -o SIM.exe SIM.c
+
+./SIM.exe 32768 8 0 0 C:\Users\andre\Desktop\VSC-Projects\CompArch\CacheSimulator\TestFiles\smallTest.t
+
+./SIM.exe 32768 8 0 0 C:\Users\andre\Desktop\VSC-Projects\CompArch\CacheSimulator\TestFiles\mediumTest.t
+
+./SIM.exe 32768 8 0 1 C:\Users\andre\Desktop\VSC-Projects\CompArch\CacheSimulator\TestFiles\mediumTest.t
+
+./SIM.exe 32768 8 1 0  C:\Users\andre\Desktop\VSC-Projects\CompArch\CacheSimulator\TestFiles\mediumTest.t
+
+./SIM.exe 32768 8 0 1 C:\Users\andre\Desktop\VSC-Projects\CompArch\CacheSimulator\TestFiles\XSBENCH.t
+
+./SIM.exe 32768 8 0 0 C:\Users\andre\Desktop\VSC-Projects\CompArch\CacheSimulator\TestFiles\XSBENCH.t
+
+
+command prompt:
+
+
+linux:
+gl
+
+apple:
+not supported
