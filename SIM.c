@@ -35,20 +35,29 @@ void UpdateLRU( long long int add )
 {
   int set = ((unsigned long long int)add / BLOCK_SIZE) % nos;
   tag = add / BLOCK_SIZE;
-    int i;
-    for (i = 0; i < assoc; i++) {
-        if (tagArray[set][i] == tag) {
-            break;
-        }
+    int tempPlace = -1;
+    bool holder;
+
+    for( int i = 0; i < assoc; i++ )
+    {
+      if( tagArray[ set ][ i ] == tag )
+      {
+        tempPlace = i;
+        break;
+      }
     }
-    bool temp = dirty[set][i];
-    for (int j = i; j > 0; j--) {
-        tagArray[set][j] = tagArray[set][j - 1];
-        dirty[set][j] = dirty[set][j - 1];
+
+    holder = dirty[ set ][ tempPlace ];
+
+    for( int i = tempPlace; i > 0; i-- )
+    {
+      tagArray[ set ][ i ] = tagArray[ set ][ i - 1 ];
+      dirty[ set ][ i ] = dirty[ set ][ i - 1 ];
     }
-    tagArray[set][0] = tag;
-    dirty[set][0] = temp;
-}
+
+    tagArray[ set ][ 0 ] = tag;
+    dirty[ set ][ 0 ] = holder;
+  }
 
 void UpdateFIFO(long long int add) {
     set = ((unsigned long long int)add / BLOCK_SIZE) % nos;
