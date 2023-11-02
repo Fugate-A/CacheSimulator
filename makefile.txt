@@ -1,25 +1,67 @@
+----------------------------------------------------------------------------------------------------------------------------------
+to compile this code you can use the following instructions and commands:
 
-vsc:
-gcc -o SIM.exe SIM.c
+in visual studio code (VSC) using terminal:
 
-./SIM.exe 32768 8 0 0 C:\Users\andre\Desktop\VSC-Projects\CompArch\CacheSimulator\TestFiles\smallTest.t
+    compile with:
+        gcc -o SIM.exe SIM.c
 
-./SIM.exe 32768 8 0 0 C:\Users\andre\Desktop\VSC-Projects\CompArch\CacheSimulator\TestFiles\mediumTest.t
+    run this command in the directory of the .c file
+    
+    the portion "SIM.exe" in the command will generate 
+    the executable file with whatever name is there, ie SIM.exe
 
-./SIM.exe 32768 8 0 1 C:\Users\andre\Desktop\VSC-Projects\CompArch\CacheSimulator\TestFiles\mediumTest.t
+    to simulate in terms of the assigned project, step 5 test; run these commands:
+        ./SIM.exe 32768 8 0 0 <location>\smallTest.t
+        ./SIM.exe 32768 8 0 0 <location>\mediumTest.t
+        ./SIM.exe 32768 8 0 1 <location>\mediumTest.t
+        ./SIM.exe 32768 8 1 0 <location>\mediumTest.t
+        ./SIM.exe 32768 8 0 1 <location>\XSBENCH.t
+        ./SIM.exe 32768 8 0 0 <location>\XSBENCH.t
 
-./SIM.exe 32768 8 1 0  C:\Users\andre\Desktop\VSC-Projects\CompArch\CacheSimulator\TestFiles\mediumTest.t
+    please replace <location> with you test file locations, most likely in your C: drive
 
-./SIM.exe 32768 8 0 1 C:\Users\andre\Desktop\VSC-Projects\CompArch\CacheSimulator\TestFiles\XSBENCH.t
+    to run other scenarios, please adjust the command appropriatly.
 
-./SIM.exe 32768 8 0 0 C:\Users\andre\Desktop\VSC-Projects\CompArch\CacheSimulator\TestFiles\XSBENCH.t
+    the command is structered as:
+        <executable file> <cache size> <associativity> <replacement policy> <write back> <trace file>
+        
+        executable file    - location of .exe
+        cache size         - simulation cache size, in terms of Bytes (B), found using base-2-log -> b2l( 32768 ) = 15 = 2^15 = 32B
+        associativity      - provided by user, free to choose this parameter
+        replacement policy - integer variable but used currently as binary input, 0 to choose LRU, 1 to choose FIFO    
+        write back         - integer variable used as binary input, 0 for write-THROUGH, 1 for write-back
+        trace file         - location of trace/test file, needs to end in file name, ie <location>\smallTest.t
 
+----------------------------------------------------------------------------------------------------------------------------------
 
-command prompt:
+in windows command prompt:
+    
+    commands are very similar to VSC terminal commands but vary slightly. The commands are structered the same but 
+    use a slightly different file name system to execute
 
+    to compile:
+        uses the same command as above:
+        
+            gcc -o SIM.exe SIM.c
 
-linux:
-gl
+    to execute cases:
+        use almost identical command as above but just use file name for the .exe   -   use " SIM.exe " intead of " ./SIM.exe "
 
-apple:
-not supported
+        <directory of .exe> SIM.exe 32768 8 0 0 <location>\smallTest.t
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+FOr Mac OS or Linux:
+    These instructions and code are written for windows 10 using VSC and using the gcc compiler.
+    
+    This would need to be compiled as your system allows and ran using different commands that 
+    will not be provided here. In general though, most enviroments operate with the same work flow
+    and you should be able to see the process and "follow along" on your system. 
+
+    Obviosly the .c code does not change, but getting it to run using a terminal, and accessing files 
+    may be system and paltform dependent.
+
+----------------------------------------------------------------------------------------------------------------------------------
+updated: November 2, 2023 - Andrew Fugate
+----------------------------------------------------------------------------------------------------------------------------------
