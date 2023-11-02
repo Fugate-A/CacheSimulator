@@ -111,13 +111,13 @@ void UpdateLRU( long long int addy )
 
 void UpdateFIFO( long long int addy )
 {
-  if( dirty[ set ][ assoc - 1 ] == true )
-  {
-    Writes++;
-  }
-
   for( int i = assoc - 1; i > 0; i-- )
   {
+    if( i == assoc - 1 && dirty[ set ][ assoc - 1 ] == true )
+    {
+      Writes++;
+    }
+
     tagArray[ set ][ i ] = tagArray[ set ][ i - 1 ];
     dirty[ set ][ i ] = dirty[ set ][ i - 1 ];
 
