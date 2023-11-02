@@ -29,21 +29,36 @@ int wb = -1;
 int set = -1;
 long long int tag = -1;
 
-char* policyString(int rp) {
-    if (rp == 0) {
-        return "LRU";
-    } else {
-        return "FIFO";
-    }
+//------------------------------------------------------------------
+
+char* policyString( int rp )
+{
+  if( rp == 0 )
+  {
+    return "LRU";
+  }
+  
+  else
+  {
+    return "FIFO";
+  }
 }
 
-char* wbString(int wb) {
-    if (wb == 0) {
-        return "through";
-    } else {
-        return "back";
-    }
+//------------------------------------------------------------------
+
+char* wbString( int wb )
+{
+  if( wb == 0 )
+  {
+    return "through";
+  }
+  
+  else
+  {
+    return "back";
+  }
 }
+
 //------------------------------------------------------------------
 
 void UpdateLRU( long long int addy )
@@ -74,6 +89,8 @@ void UpdateLRU( long long int addy )
     dirty[ set ][ 0 ] = holder;
   }
 
+//------------------------------------------------------------------
+
 void UpdateFIFO( long long int addy )
 {
   set = ((unsigned long long int)addy / BLOCK_SIZE) % nos;
@@ -87,6 +104,8 @@ void UpdateFIFO( long long int addy )
   tagArray[set][0] = tag;
   dirty[set][0] = false;
 }
+
+//------------------------------------------------------------------
 
 void simulate(char op, long long int addy) {
     int set = ((unsigned long long int)addy / BLOCK_SIZE) % nos;
