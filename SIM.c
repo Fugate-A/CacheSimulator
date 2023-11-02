@@ -1,3 +1,4 @@
+
 //------------------------------------------------------------------
 
 #include <stdio.h>
@@ -10,9 +11,9 @@
 #define BlockSize 64
 
 //------------------------------------------------------------------
-
-int nos;
-int assoc;
+/*Globar Variables*/
+int nos;    //number of sets
+int assoc;  //associativity
 
 long long int **tagArray;
 bool **dirty;
@@ -25,13 +26,18 @@ int Writes = 0;
 
 int CacheSize;
 
-int rp = -1;
-int wb = -1;
+int rp = -1;    //replacement policy
+int wb = -1;    //write_through/back
 
 int set = -1;
 long long int tag = -1;
 
 //------------------------------------------------------------------
+/*
+  Accepts the rp value and returns the appropraite
+  strinf output based on that value. Used for printing at
+  the end and comparisons throughout code
+*/
 
 char* policyString( int rp )
 {
@@ -47,6 +53,11 @@ char* policyString( int rp )
 }
 
 //------------------------------------------------------------------
+/*
+  Accepts the wb value and returns the approprate
+  string value based on that value. Used for printing at
+  the end and comparisons thorughout code
+*/
 
 char* wbString( int wb )
 {
@@ -62,6 +73,10 @@ char* wbString( int wb )
 }
 
 //------------------------------------------------------------------
+/*
+  Accepts no input and returns nothing.
+  Used to free memory after simulation is complete.
+*/
 
 void ClearMem()
 {
@@ -79,6 +94,15 @@ void ClearMem()
 }
 
 //------------------------------------------------------------------
+/*
+  Attempted to use a function to determine if the 
+  set and tag values were updated or not. Funtion
+  became too convoluted as it was within a while, 
+  making it more of a hassle than anything.
+  Would have accepted nothing because these variables
+  were global and return false if they were still "-1"
+  or true if they were changed.
+*/
 
 /*bool SetTag()
 {
@@ -94,6 +118,10 @@ void ClearMem()
 }*/
 
 //------------------------------------------------------------------
+/*
+  Accepts address and returns nothing since this is 
+  where wee want the LRU to end processing
+*/
 
 void updateLRU( long long int addy )
 {
@@ -125,6 +153,11 @@ void updateLRU( long long int addy )
 }
 
 //------------------------------------------------------------------
+/*
+  Accepts address and returns nothing since this is where
+  we want FIFO to end. Returns suedo values via incrementing
+  global variables for printing stats
+*/
 
 void updateFIFO( long long int addy )
 {
@@ -147,6 +180,12 @@ void updateFIFO( long long int addy )
 }
 
 //------------------------------------------------------------------
+/*
+  accepts operation ( R or W ) and address from main.
+  Used to determine which method to call (LRU or FIFO)
+  and performs some early proccessing. Returns nothing
+  but calls for LRU and FIFO to do their thing
+*/
 
 void simulate( char op, long long int addy )
 {
@@ -229,6 +268,14 @@ void simulate( char op, long long int addy )
 }
 
 //------------------------------------------------------------------
+/*
+  main function
+
+  accepts inputs from command line (see readme/makefile) and 
+  processes those values by initializing values, setting
+  values, calling functions (mostly simulate), and 
+  printing statistics at the end
+*/
 
 int main( int noi, char **inputs)
 {
@@ -307,3 +354,15 @@ int main( int noi, char **inputs)
     return 0;
   }
   
+//------------------------------------------------------------------
+/*
+  End of file
+
+  Current to 11-02-2023
+
+  UCF - Computer Architecture - Suboh Suboh
+  Project 1 - Cache Simulator 
+
+  Andrew Fugate
+*/
+//------------------------------------------------------------------
