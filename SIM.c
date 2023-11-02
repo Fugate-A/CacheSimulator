@@ -15,7 +15,7 @@ int assoc;
 
 int CacheSize;
 
-long long int **tag;
+long long int **tagArray;
 bool **dirty;
 
 int Hits = 0;
@@ -29,30 +29,72 @@ int rp = -1;
 
 //---------------------------------------------------------
 
-//headers
+void updateLRU( long long int add )
+{
+  //
+}
 
 //---------------------------------------------------------
-int main( int arg, char** args )
+
+void updateFIFO( long long int add )
 {
-  if( arg != 6 )
+  //
+}
+
+//---------------------------------------------------------
+
+void simulate( char op, long long int add )
+{
+  int set = ( add / BlockSize ) % nos;
+  long long int tag = add / BlockSize;
+
+  for( int i = 0; i < assoc; i++ )
   {
-    printf("Not Enough Arguments");
+    if( tag == tagArray[ set ][ i ] )
+    {
+      Hits++;
+
+      if( rp == 0 ) //rp = 0 is LRU and rp = 1 is FIFO
+      {
+        updateLRU( add );
+      }
+
+      else//if( rp == 1 )
+      {
+        updateFIFO( add );
+      }
+    }
+    
+    else
+    {
+      Misses++;
+    }
+  }
+}
+
+//---------------------------------------------------------
+
+int main( int noi, char** inputs )
+{
+  if( noi != 6 )  //number of inputs
+  {
+    printf("Not enough inputs, please try again or refer to instructions (readme or makefile)");
     return 1;
   }
   
-  CacheSize = atoi(args[1]);       //atoi = ASCII to Int function in C
-  assoc = atoi(args[2]);
-  int rp = atoi(args[3]);
-  int wb = atoi(args[4]);
+  CacheSize = atoi( inputs[1] );       //atoi = ASCII to Int function in C
+  assoc = atoi( inputs[2] );
+  rp = atoi( inputs[3] );
+  wb = atoi( inputs[4] );
   
-  char* tracefilepath = args[5];
+  char* tracefilepath = inputs[5];
   FILE * tracefile = fopen(tracefilepath, "r");
 
-  if (tracefile == NULL)
+  if( tracefile == NULL )
   {
     printf("No file found in this location or could not open file");
     return 1;
-}
+  }
 
   nos = CacheSize / ( BlockSize * assoc );  //nos = number of sets
   int offsetBits = log2( BlockSize );
