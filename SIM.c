@@ -59,17 +59,18 @@ void UpdateLRU( long long int addy )
     dirty[ set ][ 0 ] = holder;
   }
 
-void UpdateFIFO( long long int addy ) {
-    set = ((unsigned long long int)addy / BLOCK_SIZE) % nos;
-    long long int tag = addy / BLOCK_SIZE;
-    if (dirty[set][assoc - 1] == true)
-        Writes++;
-    for (int i = assoc - 1; i > 0; i--) {
-        tagArray[set][i] = tagArray[set][i - 1];
-        dirty[set][i] = dirty[set][i - 1];
-    }
-    tagArray[set][0] = tag;
-    dirty[set][0] = false;
+void UpdateFIFO( long long int addy )
+{
+  set = ((unsigned long long int)addy / BLOCK_SIZE) % nos;
+  long long int tag = addy / BLOCK_SIZE;
+  if (dirty[set][assoc - 1] == true)
+      Writes++;
+  for (int i = assoc - 1; i > 0; i--) {
+      tagArray[set][i] = tagArray[set][i - 1];
+      dirty[set][i] = dirty[set][i - 1];
+  }
+  tagArray[set][0] = tag;
+  dirty[set][0] = false;
 }
 
 void Simulate_access(char op, long long int addy) {
@@ -123,59 +124,65 @@ void Simulate_access(char op, long long int addy) {
     }
 }
 
-int main(int arg, char **args) {
-    if (arg != 6) {
-        printf("Invalid Number of Arguments.");
-        return 1;
-    }
+int main( int noi, char **inputs)
+{
+  if (noi != 6)
+  {
+    printf("Not enough inputs, please try again or refer to instructions (readme or makefile)");
+    return 1;
+  }
 
-    CacheSize = atoi(args[1]);
-    assoc = atoi(args[2]);
-    rp = atoi(args[3]);
-    wb = atoi(args[4]);
-    char *tracefile = args[5];
+  char op;
+  long long int addy;
 
-    FILE *file = fopen(tracefile, "r");
-    if (file == NULL) {
-        printf("Error: Could not open the trace file.\n");
-        return 1;
-    }
+  CacheSize = atoi( inputs[1] );
+  assoc = atoi( inputs[2] );
+  rp = atoi( inputs[3] );
+  wb = atoi( inputs[4] );
+  
+  char *tracefilepath = inputs[5];
+  FILE *tracefile = fopen(tracefilepath, "r");
+  
+  if (tracefile == NULL)
+  {
+    printf("No file found in this location or could not open file");
+    return 1;
+  }
 
-    nos = CacheSize / (BLOCK_SIZE * assoc);
+  nos = CacheSize / ( BLOCK_SIZE * assoc );
 
-    tagArray = (long long int **)malloc(nos * sizeof(long long int *));
-    dirty = (bool **)malloc(nos * sizeof(bool *));
+  tagArray = malloc( sizeof( long long int* ) * nos );
+  dirty = malloc( sizeof( bool* ) * nos );
 
-    for (int i = 0; i < nos; i++) {
-        tagArray[i] = (long long int *)malloc(assoc * sizeof(long long int));
-        dirty[i] = (bool *)malloc(assoc * sizeof(bool));
-    }
+  for (int i = 0; i < nos; i++) {
+      tagArray[i] = (long long int *)malloc(assoc * sizeof(long long int));
+      dirty[i] = (bool *)malloc(assoc * sizeof(bool));
+  }
 
-    for (int i = 0; i < nos; i++) {
-        for (int j = 0; j < assoc; j++) {
-            tagArray[i][j] = -1;
-            dirty[i][j] = false;
-        }
-    }
+  for (int i = 0; i < nos; i++) {
+      for (int j = 0; j < assoc; j++) {
+          tagArray[i][j] = -1;
+          dirty[i][j] = false;
+      }
+  }
 
-    char op;
-    long long int addy;
-    while (fscanf(file, " %c %llx\n", &op, &addy) != EOF) {
-        Simulate_access(op, addy);
-    }
+  
+  while (fscanf(tracefile, " %c %llx\n", &op, &addy) != EOF) {
+      Simulate_access(op, addy);
+  }
 
-    fclose(file);
+  fclose(tracefile);
 
-    double Misses_ratio = (double)Misses / (Misses + Hits);
-    printf("Misses Ratio %lf\n", Misses_ratio);
-    printf("Writes %d\n", Writes);
-    printf("Reads %d\n", Reads);
+  double Misses_ratio = (double)Misses / (Misses + Hits);
+  printf("Misses Ratio %lf\n", Misses_ratio);
+  printf("Writes %d\n", Writes);
+  printf("Reads %d\n", Reads);
 
-    for (int i = 0; i < nos; i++) {
-        free(tagArray[i]);
-        free(dirty[i]);
-    }
-    free(tagArray);
-    free(dirty);
-    return 0;
+  for (int i = 0; i < nos; i++) {
+      free(tagArray[i]);
+      free(dirty[i]);
+  }
+  free(tagArray);
+  free(dirty);
+  return 0;
 }
