@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------
 
-#define BlockSize 64
+#define BlockSize 64  //given value to be assumed
 
 //------------------------------------------------------------------
 /*Globar Variables*/
@@ -338,7 +338,7 @@ int main( int noi, char **inputs)
     simulate(op, addy);
   }
 
-  printf("\nResults:\nMiss ratio: %lf\nWrites: %d\nReads: %d\n\nExtra Information:\n\tHits: %.0lf\tMisses: %.0lf\n\n\tInputs:\n\t\tCache Size: %d\tAssociativity: %d\n\t\tPolicy: %s -- write_%s\n\n",
+  printf("\nResults:\nMiss ratio: %lf\nWrites: %d\nReads: %d\n\nExtra Information:\n\tHits: %.0lf\tMisses: %.0lf\n\n\tInputs:\n\tCache Size: %d\tAssociativity: %d\n\tPolicy: %s -- write_%s\n\n",
         Misses / (Hits + Misses),
         Writes,
         Reads,
