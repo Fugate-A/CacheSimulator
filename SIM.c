@@ -78,7 +78,7 @@ char* wbString( int wb )
 
 //------------------------------------------------------------------
 
-void UpdateLRU( long long int addy )
+void updateLRU( long long int addy )
 {
   int tempPlace = -1;
   bool holder;
@@ -109,7 +109,7 @@ void UpdateLRU( long long int addy )
 
 //------------------------------------------------------------------
 
-void UpdateFIFO( long long int addy )
+void updateFIFO( long long int addy )
 {
   for( int i = assoc - 1; i > 0; i-- )
   {
@@ -131,53 +131,84 @@ void UpdateFIFO( long long int addy )
 
 //------------------------------------------------------------------
 
-void simulate(char op, long long int addy) {
-    for (int i = 0; i < assoc; i++) {
-        if (tag == tagArray[set][i]) {
-            Hits++;
-            if (rp == 0) {
-                UpdateLRU(addy);
-                if (op == 'W' && wb == 1) {
-                    dirty[set][0] = true;
-                }
-            } else {
-                if (op == 'W' && wb == 1) {
-                    dirty[set][i] = true;
-                }
-            }
-            if (op == 'W' && wb == 0) {
-                Writes++;
-            }
-            return;
+void simulate( char op, long long int addy )
+{
+  for( int i = 0; i < assoc; i++ )
+  {
+    if( tag == tagArray[ set ][ i ] )
+    {
+      Hits++;
+
+      if( policyString( rp ) == "LRU" )
+      {
+        updateLRU( addy );
+        
+        if( wbString( wb ) == "back" &&  op == 'W' )
+        {
+          dirty[set][0] = true;
         }
+      }
+      
+      else//if( policyString( rp ) == "FIFO" )
+      {
+        if( wbString( wb ) == "back" &&  op == 'W' )
+        {
+          dirty[set][i] = true;
+        }
+      }
+      
+      if( wbString( wb ) == "through" &&  op == 'W' )
+      {
+        Writes++;
+      }
+
+      return;
     }
-    Misses++;
-    Reads++;
-    if (rp == 0) {
-        if (dirty[set][assoc - 1] == true) {
-            Writes++;
-        }
-        for (int i = assoc - 1; i > 0; i--) {
-            tagArray[set][i] = tagArray[set][i - 1];
-            dirty[set][i] = dirty[set][i - 1];
-        }
-        tagArray[set][0] = tag;
-        dirty[set][0] = false;
-        if (op == 'W' && wb == 1) {
-            dirty[set][0] = true;
-        }
-        if (op == 'W' && wb == 0) {
-            Writes++;
-        }
-    } else {
-        UpdateFIFO(addy);
-        if (op == 'W' && wb == 1) {
-            dirty[set][0] = true;
-        }
-        if (op == 'W' && wb == 0) {
-            Writes++;
-        }
+  }
+  
+  Misses++;
+  Reads++;
+  
+  if( policyString( rp ) == "LRU" )
+  {
+    if( dirty[ set ][ assoc - 1 ] == true )
+    {
+      Writes++;
     }
+
+    for( int i = assoc - 1; i > 0; i-- )
+    {
+      tagArray[ set ][ i ] = tagArray[ set ][ i - 1 ];
+      dirty[ set ][ i ] = dirty[ set ][ i - 1 ];
+    }
+
+    tagArray[ set ][ 0 ] = tag;
+    dirty[ set ][ 0 ] = false;
+    
+    if( wbString( wb ) == "back" &&  op == 'W' )
+    {
+      dirty[ set ][ 0 ] = true;
+    }
+
+    if( wbString( wb ) == "through" &&  op == 'W' )
+    {
+      Writes++;
+    }
+  }
+  
+  else
+  {
+    updateFIFO(addy);
+    if( wbString( wb ) == "back" &&  op == 'W' )
+    {
+      dirty[ set ][ 0 ] = true;
+    }
+
+    if( wbString( wb ) == "through" &&  op == 'W' )
+    {
+      Writes++;
+    }
+  }
 }
 
 //------------------------------------------------------------------
