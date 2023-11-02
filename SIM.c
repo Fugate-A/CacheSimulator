@@ -29,6 +29,21 @@ int wb = -1;
 int set = -1;
 long long int tag = -1;
 
+char* policyString(int rp) {
+    if (rp == 0) {
+        return "LRU";
+    } else {
+        return "FIFO";
+    }
+}
+
+char* wbString(int wb) {
+    if (wb == 0) {
+        return "through";
+    } else {
+        return "back";
+    }
+}
 //------------------------------------------------------------------
 
 void UpdateLRU( long long int addy )
@@ -73,7 +88,7 @@ void UpdateFIFO( long long int addy )
   dirty[set][0] = false;
 }
 
-void Simulate_access(char op, long long int addy) {
+void simulate(char op, long long int addy) {
     int set = ((unsigned long long int)addy / BLOCK_SIZE) % nos;
     long long int tag = addy / BLOCK_SIZE;
     for (int i = 0; i < assoc; i++) {
@@ -124,6 +139,8 @@ void Simulate_access(char op, long long int addy) {
     }
 }
 
+//------------------------------------------------------------------
+
 int main( int noi, char **inputs)
 {
   if (noi != 6)
@@ -154,29 +171,43 @@ int main( int noi, char **inputs)
   tagArray = malloc( sizeof( long long int* ) * nos );
   dirty = malloc( sizeof( bool* ) * nos );
 
-  for (int i = 0; i < nos; i++) {
-      tagArray[i] = (long long int *)malloc(assoc * sizeof(long long int));
-      dirty[i] = (bool *)malloc(assoc * sizeof(bool));
+  for( int i = 0; i < nos; i++ )
+  {
+    tagArray[i] = malloc( sizeof( long long int ) * assoc );
+    dirty[i] = malloc( sizeof( bool ) * assoc );
   }
 
-  for (int i = 0; i < nos; i++) {
-      for (int j = 0; j < assoc; j++) {
-          tagArray[i][j] = -1;
-          dirty[i][j] = false;
-      }
+  for( int i = 0; i < nos; i++ )
+  {
+    for( int j = 0; j < assoc; j++ )
+    {
+      tagArray[ i ][ j ] = -1;
+      dirty[ i ][ j ] = false;
+    }
   }
-
   
-  while (fscanf(tracefile, " %c %llx\n", &op, &addy) != EOF) {
-      Simulate_access(op, addy);
+  while( fscanf( tracefile, "%c %llx\n", &op, &addy) != EOF )
+  {
+    simulate(op, addy);
   }
 
   fclose(tracefile);
 
-  double Misses_ratio = (double)Misses / (Misses + Hits);
+  printf("\nResults:\nMiss ratio: %lf\nWrites: %d\nReads: %d\n\nExtra Information:\n\tHits: %.0lf\tMisses: %.0lf\n\n\tInputs:\n\t\tCache Size: %d\tAssociativity: %d\n\t\tPolicy: %s -- write_%s",
+        Misses / (Hits + Misses),
+        Writes,
+        Reads, Hits,
+        Misses,
+        CacheSize,
+        assoc,
+        policyString(rp),
+        wbString(wb)
+    );
+
+  /*double Misses_ratio = (double)Misses / (Misses + Hits);
   printf("Misses Ratio %lf\n", Misses_ratio);
   printf("Writes %d\n", Writes);
-  printf("Reads %d\n", Reads);
+  printf("Reads %d\n", Reads);*/
 
   for (int i = 0; i < nos; i++) {
       free(tagArray[i]);
