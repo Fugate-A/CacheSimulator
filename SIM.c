@@ -74,6 +74,36 @@ void simulate( char op, long long int addy )
 
 //---------------------------------------------------------
 
+char policyString( rp )
+{
+  if( rp == 0 )
+  {
+    return "yes";
+  }
+
+  else
+  {
+    return "no";
+  }
+}
+
+//---------------------------------------------------------
+
+char wbString( wb )
+{
+  if( wb == 0 )
+  {
+    return "yes";
+  }
+
+  else
+  {
+    return "no";
+  }
+}
+
+//---------------------------------------------------------
+
 int main( int noi, char** inputs )
 {
   if( noi != 6 )  //number of inputs
@@ -99,6 +129,9 @@ int main( int noi, char** inputs )
     return 1;
   }
 
+  /*printf("CacheSize: %lldB\tAssoc: %d\trp: %d\twb: %d\ntrace path: %s",
+              CacheSize, assoc, rp, wb, tracefilepath);*/
+
   nos = CacheSize / ( BlockSize * assoc );  
 
   tagArray = malloc( nos * sizeof( long long int* ) );
@@ -121,12 +154,25 @@ int main( int noi, char** inputs )
     }
   }
 
-printf("CacheSize: %lldB\tAssoc: %d\trp: %d\twb: %d\ntrace path: %s",
-              CacheSize, assoc, rp, wb, tracefilepath);
+  while( fscanf( tracefile, "%c %llx", &op, &addy ) != EOF )
+  {
+    simulate( op, addy );
+  }
 
+  fclose( tracefile );
 
+  printf("\nResults:\nMiss ratio: %d\nWrites: %d\nReads: %d\n\nExtra Information:\n\tHits: %d\tMisses: %d\n\n\tInputs:\n\t\tCache Size: %d\tAssociativity: %d\t Policy: %s, Write_%s",
+            Misses / ( Hits + Misses ),
+            Writes,
+            Reads,Hits,
+            Misses,
+            CacheSize,
+            assoc,
+            policyString( rp ),
+            wbString( wb )
+          );
 
-//dont forget to free :)
+  //dont forget to free :)
 
   return 0;
 }
