@@ -27,10 +27,10 @@ in visual studio code (VSC) using terminal:
         <executable file> <cache size> <associativity> <replacement policy> <write back> <trace file>
         
         executable file    - location of .exe
-        cache size         - simulation cache size, in terms of Bytes (B), found using base-2-log -> b2l( 32768 ) = 15 = 2^15 = 32B
+        cache size         - simulation cache size, in terms of Bytes (B), found using base-2-log -> b2l( 32768 ) = 15 = 2^15 = 32KB
         associativity      - provided by user, free to choose this parameter
         replacement policy - integer variable but used currently as binary input, 0 to choose LRU, 1 to choose FIFO    
-        write back         - integer variable used as binary input, 0 for write-THROUGH, 1 for write-back
+        write back         - integer variable used as binary input, 0 for write-THROUGH, 1 for write-BACK
         trace file         - location of trace/test file, needs to end in file name, ie <location>\smallTest.t
 
 ----------------------------------------------------------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ FOr Mac OS or Linux:
     and you should be able to see the process and "follow along" on your system. 
 
     Obviosly the .c code does not change, but getting it to run using a terminal, and accessing files 
-    may be system and paltform dependent.
+    may be system and platform dependent.
 
 ----------------------------------------------------------------------------------------------------------------------------------
 updated: November 2, 2023 - Andrew Fugate
